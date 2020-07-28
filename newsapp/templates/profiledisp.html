@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Welcome to {{user.first_name}} Profile </title>
+{% endblock %}
+
+{% block content %}
+<div class="card-body">
+	{% for message in messages %}
+  <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+  	{{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>   
+  </div>
+{% endfor %}
+</div>
+    <div class="content_bottom">
+      <div class="col-lg-8  col-md-8">
+        <div class="content_bottom">
+          <div class="single_page_area">
+            <ol class="breadcrumb">
+              <li><a href="#">Home</a></li>
+              <li><a href="#">Profile</a></li>
+              <li class="active" style="text-transform: capitalize;">{{user.first_name}}</li>
+            </ol>
+        </div>
+    </div>
+</div>
+</div>
+<div class="container">
+    <div class="row profile">
+		<div class="col-md-3">
+			<div class="profile-sidebar">
+				<!-- SIDEBAR USERPIC -->
+				{% if prof.profilepic %}
+				<div class="profile-userpic">
+					<center><img src="{{prof.profilepic.url}}" class="img-circle" alt="" width="150px" height="150px"></center>
+				</div>
+				{% endif %}
+				<!-- END SIDEBAR USERPIC -->
+				<!-- SIDEBAR USER TITLE -->
+				<div class="profile-usertitle">
+					<div class="profile-usertitle-name">
+					<center><h3 style="text-transform: capitalize;">{{user.first_name}}</h3></center>	
+					</div>
+					<div class="profile-usertitle-job">
+					<center><p>{{prof.bio}}</p></center>	
+					</div>
+				</div>
+				<!-- END SIDEBAR USER TITLE -->
+				<!-- SIDEBAR MENU -->
+				<div class="profile-usermenu">
+					<ul class="nav">
+						<li class="active">
+							<a href="#">
+							<i class="glyphicon glyphicon-home"></i>
+							Overview </a>
+						</li>
+						{% if user.is_audience %}
+						<li>
+							<a href="/interests/">
+							<i class="glyphicon glyphicon-ok"></i>
+							Change Interests </a>
+						</li>
+						{% endif %}
+						<li>
+							<a href="/profile/">
+							<i class="glyphicon glyphicon-user"></i>
+							Edit Profile </a>
+						</li>
+						{% if user.is_staff %}
+						<li>
+							<a href="{% url 'postbyuser' user.username %}" target="_blank">
+							<i class="glyphicon glyphicon-ok"></i>
+							Articles Written </a>
+						</li>
+						<li>
+							<a href="/news/new/">
+							<i class="glyphicon glyphicon-pencil"></i>
+							Write Article </a>
+						</li>
+						{% endif %}
+					</ul>
+				</div>
+				<!-- END MENU -->
+			</div>
+		</div>
+		<div class="col-md-9">
+            <div class="profile-content">
+            	<br>
+            	<br><br>
+			   <b>First Name: {{user.first_name}}</b><br>
+<b>Last Name: {{user.last_name}}</b><br>
+<b>Email: {{user.email}}</b><br>
+            </div>
+		</div>
+	</div>
+</div>
+{% endblock %}

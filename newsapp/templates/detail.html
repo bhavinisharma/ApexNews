@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block head %}
+<title>{{article.title}}</title>
+<meta property="og:title" content="{{article.title}}" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="{% url 'list_of_news_by_category' article.category.slug %}" />
+<meta property="og:image" content="{{article.pic.url}}" />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{article.title}}">
+<meta name="twitter:description" content="{{article.content|truncatewords:30|striptags|safe}}">
+<meta name="twitter:creator" content="{{article.user}}">
+<meta name="twitter:image" content="{{article.pic.url}}">
+<meta name="twitter:domain" content="{% url 'list_of_news_by_category' article.category.slug %}">
+{% endblock %}
+{% block content %}
+ <div class="content_bottom">
+      <div class="col-lg-8 col-md-8">
+        <div class="content_bottom_left">
+          <div class="single_page_area">
+            <ol class="breadcrumb">
+              <li><a href="/">Home</a></li>
+              <li><a href="{% url 'list_of_news_by_category' article.category.slug %}">{{article.category}}</a></li>
+              <li class="active">{{article.title|truncatewords:5}}</li>
+            </ol>
+            <h2 class="post_titile">{{article.title}}</h2>
+            <div class="single_page_content">
+              <div class="post_commentbox"> <a href="{% url 'profiledisp' article.user.username %}"><i class="fa fa-user"></i>{{article.user}}</a> <span><i class="fa fa-calendar"></i>{{article.date_created}}</span> <a href="{% url "list_of_news_by_category" article.category.slug %}"><i class="fa fa-tags"></i>{{article.category}}</a> </div>
+              {% if article.pic %}
+              <img class="img-center" src="{{article.pic.url}}" alt="">
+              {% endif %}
+              <p>{{article.content|safe}}</p>
+            </div>
+          </div>
+          <center>
+<div>
+{% ifequal post.user request.user %}
+<a href='/delete/{{post.pk}}/'  class="btn btn-primary btn-md"> Delete</a> 
+<a href='/edit/{{post.pk}}/' class="btn btn-primary btn-md">Edit</a>
+{% endifequal %}
+</div>
+</center>
+{% load social_share %}
+		    	<div>
+                    <ul class="social-network social-circle">
+                        <li>{% post_to_facebook object_or_url %}</li>
+                        <li>{% post_to_twitter "Check it out!" object_or_url %}</li>
+                        <li>{% post_to_gplus object_or_url %}</li>
+                        <li>{% post_to_linkedin object_or_url %}</li>
+                    </ul>				
+				</div>
+        </div>
+        
+		{% if similar_posts %}
+        {% for i in similar_posts %}
+        <div class=" mt-2 container similar_post">
+          <h2>Similar Post You May Like <i class="fa fa-thumbs-o-up"></i></h2>
+          <ul class="small_catg similar_nav wow fadeInDown animated">
+            <li>
+              <div class="media wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;"> <a class="media-left related-img" href="{{ i.get_absolute_url }}"><img src="{{i.pic.url}}" alt=""></a>
+                <div class="media-body">
+                  <h4 class="media-heading"><a href="{{ i.get_absolute_url }}">{{i.title|truncatewords:5}}</a></h4>
+                  <p>{{i.content|truncatewords:15|striptags|safe}}</p>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        {% endfor %}
+              {% endif %}
+<div>
+{% with comments.count as total_comments %}
+        <h2>{{ total_comments }} comment{{ total_comments|pluralize }}</h2>
+    {% endwith %}
+    </div>
+    {% for comment in comments %}
+        <div>
+          <img src="https://images.vexels.com/media/users/3/129616/isolated/preview/fb517f8913bd99cd48ef00facb4a67c0-businessman-avatar-silhouette-by-vexels.png" class="img-circle" alt="Cinque Terre" width="50" height="50" style="vertical-align: middle;margin-top: 8px;">
+            <span style="font-size: 18px;">&nbsp;<u><b>by {{ comment.name }}</b> {{ comment.created|timesince }} ago</u></span>
+            <br>
+            <p style="margin-left: 4em;margin-top: -12px;font-size: 15px;">{{ comment.body }}</p>
+        </div>
+    {% empty %}
+        <p>There are no comments yet.</p>
+    {% endfor %}
+    
+    {% if new_comment %}
+        <h2>Your comment has been added.</h2>
+    {% else %}
+        <h2>Add a new comment</h2>
+        <form action="" method="POST">
+        <div style="height: auto;">
+            {{ comment_form|crispy }}
+            {% csrf_token %}
+            <p><input type="submit" class="btn btn-success" value="Add comment"></p>
+            </div>
+        </form>
+        
+    {%  endif %}
+
+      </div>
+      <div class="col-lg-4 col-md-4">
+        <div class="content_bottom_right">
+          <div class="single_bottom_rightbar">
+            <h2>Recent Post</h2>
+            <ul class="small_catg popular_catg wow fadeInDown">
+              {% if data %}
+              {% for i in data|slice:":4" %}
+              <li>
+                <div class="media wow fadeInDown"> <a href="{{ i.get_absolute_url }}" class="media-left"><img alt="" src="{{i.pic.url}}"> </a>
+                  <div class="media-body">
+                    <h4 class="media-heading"><a href="{{ i.get_absolute_url }}">{{i.title}}</a></h4>
+                    <p>{{i.content|truncatewords:30|striptags|safe}}</p>
+                  </div>
+                </div>
+              </li>
+              {% endfor %}
+              {% endif %}
+            </ul>
+          </div>
+          <div class="single_bottom_rightbar">
+            <ul role="tablist" class="nav nav-tabs custom-tabs">
+              <li class="active" role="presentation"><a data-toggle="tab" role="tab" aria-controls="home" href="#mostPopular">Most Popular</a></li>
+            </ul>
+            <div class="tab-content">
+              <div id="mostPopular" class="tab-pane fade in active" role="tabpanel">
+                <ul class="small_catg popular_catg wow fadeInDown">
+                  {% if trend %}
+              {% for i in trend|slice:":4" %}
+                  <li>
+                    <div class="media wow fadeInDown"> <a class="media-left" href="{{ i.get_absolute_url }}"><img src="{{i.pic.url}}" height="390px" width="240px"></a>
+                      <div class="media-body">
+                        <h4 class="media-heading"><a href="{{ i.get_absolute_url }}">{{i.title}}</a></h4>
+                        <p>{{i.content|truncatewords:15|striptags|safe}}</p>
+                      </div>
+                    </div>
+                  </li>
+              {% endfor %}
+              {% endif %}
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="single_bottom_rightbar">
+            <h2>Blog Archive</h2>
+            <div class="blog_archive wow fadeInDown">
+              <form action="#">
+                <select>
+                  <option value="">Blog Archive</option>
+                  <option value="">October(20)</option>
+                </select>
+              </form>
+            </div>
+          </div>
+          <div class="single_bottom_rightbar wow fadeInDown">
+            <h2>Popular Lnks</h2>
+            <ul>
+              <li><a href="#">Home</a></li>
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">Social link</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+  

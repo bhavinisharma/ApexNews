@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block head %}
+<title> Category Wise List </title>
+{% endblock %}
+{% block content %}
+<div class="content_bottom">
+      <div class="col-lg-8 col-md-8">
+        <div class="content_bottom_left">
+          <div class="single_category wow fadeInDown">
+            <div class="archive_style_1">
+              <h2> <span class="bold_line"><span></span></span> <span class="solid_line"></span> <span class="title_text">Personalized Feed</span> </h2>
+              {% if articles %}
+              {% for i in articles %}
+              <div class="business_category_left wow fadeInDown">
+                <ul class="fashion_catgnav">
+                  <li>
+                    <div class="catgimg2_container"> <a href="{{ i.get_absolute_url }}"><img alt="" src="{{i.pic.url}}"></a> </div>
+                    <h2 class="catg_titile"><a href="{{ i.get_absolute_url }}">{{i.title}}</a></h2>
+                    <div class="comments_box"> <span class="meta_date">{{i.date_created}}</span> <span class="meta_comment"><a href="#">No Comments</a></span> <span class="meta_more"><a  href="{{ i.get_absolute_url }}">Read More...</a></span> </div>
+                    <p>{{i.content|truncatewords:30|striptags|safe}}</p>
+                  </li>
+                </ul>
+              </div>
+              {% endfor %}
+              {% endif %}
+          </div>
+      </div>
+  </div>
+</div>
+</div>
+{% if is_paginated %}
+        <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                    <li class="disabled"><span>&laquo;</span></li>
+                {% endif %}
+                {% for i in page_obj.paginator.page_range %}
+                {% if page_obj.number == i %}
+                <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                {% else %}
+                <li><a href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}
+                </ul>
+    {% endif %}
+{% endblock %}

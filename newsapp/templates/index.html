@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ApeXNews</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="/static/assets/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="/static/assets/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="/static/assets/css/animate.css">
+<link rel="stylesheet" type="text/css" href="/static/assets/css/slick.css">
+<link rel="stylesheet" type="text/css" href="/static/assets/css/theme.css">
+<link rel="stylesheet" type="text/css" href="/static/assets/css/style.css">
+<!--[if lt IE 9]>
+<script src="/static/assets/js/html5shiv.min.js"></script>
+<script src="/static/assets/js/respond.min.js"></script>
+<![endif]-->
+</head>
+<body>
+<div id="preloader">
+  <div id="status">&nbsp;</div>
+</div>
+<a class="scrollToTop" href="#"><i class="fa fa-angle-up"></i></a>
+<div class="container" style="min-height: 100%;">
+  <header id="header">
+    <div class="row">
+      <div class="col-lg-12 col-md-12">
+        <div class="header_top">
+          <div class="header_top_left">
+            <ul class="top_nav">
+              <li><a href="/">Home</a></li>
+              <li><a href="/about/">About</a></li>
+              <li><a href="/contact/">Contact</a></li>
+              {% if not request.user.is_authenticated %}
+              <li><a href="{% url 'login' %}">Login</a></li>
+              <li><a href="{% url 'signup' %}">Signup</a></li>
+              {% endif %}
+              {% if request.user.is_authenticated %}
+              <li><a href="{% url 'profiledisp' request.user.username %}">Profile</a></li>
+              <li><a href="{% url 'logout' %}">LogOut</a></li>
+              {% endif %}
+            </ul>
+          </div>
+          <div class="header_top_right">
+            <form role="search" class="search_form" action='/search/' method="Post">
+              {% csrf_token %}
+              <input type="text" placeholder="Text to Search" name="search_box" value="">
+              <input type="submit" value="">
+            </form>
+          </div>
+        </div>
+        <div class="header_bottom">
+          <div class="header_bottom_left"><a class="logo" href="/">ApeX<strong>News</strong> <span>Personalized News Feed</span></a></div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div id="navarea">
+    <nav class="navbar navbar-default" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav custom_nav">
+            <li class=""><a href="/">Home</a></li>
+            <li class="dropdown"> <a href="#" class="" data-toggle="dropdown" role="button" aria-expanded="false">News</a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="{% url 'list_of_news_by_category' 'national' %}">National</a></li>
+                <li><a href="{% url 'list_of_news_by_category' 'international' %}">International</a></li>
+                <li><a href="{% url 'list_of_news_by_category' 'states' %}">States</a></li>
+                <li><a href="{% url 'list_of_news_by_category' 'cities' %}">Cities</a></li>
+              </ul>
+            </li>
+            <li><a href="{% url 'list_of_news_by_category' 'business' %}">Business</a></li>
+            <li><a href="{% url 'list_of_news_by_category' 'sports' %}">Sports</a></li>
+            <li><a href="{% url 'list_of_news_by_category' 'science' %}">Science</a></li>
+            <li><a href="{% url 'list_of_news_by_category' 'technology' %}">Technology</a></li>
+            <li><a href="{% url 'list_of_news_by_category' 'entertainment' %}">Entertainment</a></li>
+            <li><a href="{% url 'list_of_news_by_category' 'lifestyle' %}">Lifestyle</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+  <section id="mainContent">
+    <div class="content_top">
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm6">
+          <div class="single_category wow fadeInDown">
+            <h2> <span class="bold_line"><span></span></span> <span class="solid_line"></span> <a class="title_text">Trending</a> </h2>
+          </div>
+          <div class="latest_slider">
+            <div class="slick_slider">
+              {% if data %}
+              {% for i in trend|slice:":4" %}
+              <div class="single_iteam"><img src="{{i.pic.url}}" height="550px" width="330px">
+                <h2><a class="slider_tittle" href="{{ i.get_absolute_url }}">{{i.title}}</a></h2>
+              </div>
+              {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6">
+          <div class="content_top_right">
+            <ul class="featured_nav wow fadeInDown">
+              <div class="single_category wow fadeInDown">
+            <h2> <span class="bold_line"><span></span></span> <span class="solid_line"></span> <a class="title_text">Just Now</a> </h2>
+          </div>
+              {% if data %}
+              {% for i in data|slice:":4" %}
+              <li><img src="{{i.pic.url}}" height="300px" width="215px">
+                <div class="title_caption"><a href="{{ i.get_absolute_url }}">{{i.title}}</a></div>
+              </li>
+              {% endfor %}
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content_middle">
+      <div class="col-lg-3 col-md-3 col-sm-3">
+        <div class="content_middle_leftbar">
+          <div class="single_category wow fadeInDown">
+            <h2> <span class="bold_line"><span></span></span> <span class="solid_line"></span> <a href="{% url 'list_of_news_by_category' 'national' %}" class="title_text">National</a> </h2>
+            <ul class="catg1_nav">
+              {% if national %}
+              {% for i in national|slice:":4" %}
+              <li>
+                <div class="catgimg_container"> <a href="{{ i.get_absolute_url }}" class="catg1_img"><img alt="" src="{{i.pic.url}}" height="292px" width="150px"></a></div>
+                <h3 class="post_titile"><a href="{{ i.get_absolute_url }}">{{i.title}}</a></h3>
+              </li>
+              {% endfor %}
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5 col-md-6 col-sm-6">
+        <div class="content_middle_middle">
+          <div class="single_category wow fadeInDown" style="margin-top: -15px;">
+          <h2> <span class="bold_line"><span></span></span> <span class="solid_line"></span> <a href="{% url 'list_of_news_by_category' 'movies' %}" class="title_text">Movies</a> </h2>
+          <div class="slick_slider2">
+            {% if movies %}
+              {% for i in movies|slice:":4" %}
+            <div class="single_featured_slide"> <a href="{{ i.get_absolute_url }}"><img src="{{i.pic.url}}" height="400px" width="330px" alt=""></a>
+              <h2><a href="{{ i.get_absolute_url }}">{{i.title}}</a></h2>
+              <p>{{i.content|truncatewords:30|striptags|safe}}</p>
+            </div>
+              {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-3 col-sm-3">
+        <div class="content_middle_rightbar">
+          <div class="single_category wow fadeInDown">
+            <h2> <span class="bold_line"><span></span></span> <span class="solid_line"></span> <a href="{% url 'list_of_news_by_category' 'international' %}" class="title_text">International</a> </h2>
+            <ul class="catg1_nav">
+              {% if international %}
+              {% for i in international|slice:":2" %}
+              <li>
+                <div class="catgimg_container"> <a href="{{ i.get_absolute_url }}" class="catg1_img"><img alt="" src="{{i.pic.url}}" height="292px" width="150px"></a></div>
+                <h3 class="post_titile"><a href="{{ i.get_absolute_url }}">{{i.title}}</a></h3>
+              </li>
+              {% endfor %}
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content_bottom">
+      <div class="col-lg-8 col-md-8">
+        <div class="content_bottom_left">
+          <div class="single_category wow fadeInDown">
+            <h2> <span class="bold_line"><span></span></span> <span class="solid_line"></span> <a class="title_text" href="{% url 'list_of_news_by_category' 'business' %}">Business</a> </h2>
+            <div class="business_category_left wow fadeInDown">
+              <ul class="fashion_catgnav">
+                {% if business %}
+              {% for i in business|slice:":1" %}
+                <li>
+                  <div class="catgimg2_container"> <a href="{{ i.get_absolute_url }}"><img alt="" src="{{i.pic.url}}" height="390px" width="240px"></a> </div>
+                  <h2 class="catg_titile"><a href="{{ i.get_absolute_url }}">{{i.title}}</a></h2>
+                  {% with i.comments.count as total_comments %}
+                  <div class="comments_box"> <span class="meta_date">{{i.date_created}}</span> <span class="meta_comment"><a href="{{ i.get_absolute_url }}">{{ total_comments }} comment{{ total_comments|pluralize }}</a></span> <span class="meta_more"><a  href="{{ i.get_absolute_url }}">Read More...</a></span> </div>
+                  {% endwith %}
+                  <p>{{i.content|truncatewords:30|striptags|safe}}</p>
+                </li>
+              {% endfor %}
+              {% endif %}
+              </ul>
+            </div>
+            <div class="business_category_right wow fadeInDown">
+              <ul class="small_catg">
+                {% if business %}
+              {% for i in business|slice:"1:4" %}
+                <li>
+                  <div class="media wow fadeInDown"> <a class="media-left" href="{{ i.get_absolute_url }}"><img src="{{i.pic.url}}" height="390px" width="240px"></a>
+                    <div class="media-body">
+                      <h4 class="media-heading"><a href="{{ i.get_absolute_url }}">{{i.title}}</a></h4>
+                      {% with i.comments.count as total_comments %}
+                        <div class="comments_box"> <span class="meta_date">{{i.date_created}}</span> <span class="meta_comment"><a href="{{ i.get_absolute_url }}">{{ total_comments }} comment{{ total_comments|pluralize }}</a></span> </div>
+                        {% endwith %}
+                    </div>
+                  </div>
+                </li>
+              {% endfor %}
+              {% endif %}
+              </ul>
+            </div>
+          </div>
+          <div class="games_fashion_area">
+            <div class="games_category">
+              <div class="single_category">
+                <h2> <span class="bold_line"><span></span></span> <span class="solid_line"></span> <a class="title_text" href="{% url 'list_of_news_by_category' 'sports' %}">Sports</a> </h2>
+                <ul class="fashion_catgnav wow fadeInDown">
+                  {% if sports %}
+              {% for i in sports|slice:":1" %}
+                  <li>
+                    <div class="catgimg2_container"> <a href="{{ i.get_absolute_url }}"><img alt="" src="{{i.pic.url}}" height="390px" width="240px"></a> </div>
+                    <h2 class="catg_titile"><a href="{{ i.get_absolute_url }}">{{i.title}}</a></h2>
+                    {% with i.comments.count as total_comments %}
+                  <div class="comments_box"> <span class="meta_date">{{i.date_created}}</span> <span class="meta_comment"><a href="{{ i.get_absolute_url }}">{{ total_comments }} comment{{ total_comments|pluralize }}</a></span> <span class="meta_more"><a  href="{{ i.get_absolute_url }}">Read More...</a></span> </div>
+                  {% endwith %}
+                    <p>{{i.content|truncatewords:30|striptags|safe}}</p>
+                  </li>
+              {% endfor %}
+              {% endif %}
+                </ul>
+                <ul class="small_catg wow fadeInDown">
+                  {% if sports %}
+              {% for i in sports|slice:"1:4" %}
+                  <li>
+                    <div class="media"> <a class="media-left" href="{{ i.get_absolute_url }}"><img src="{{i.pic.url}}" height="390px" width="240px"></a>
+                      <div class="media-body">
+                        <h4 class="media-heading"><a href="{{ i.get_absolute_url }}">{{i.title}}</a></h4>
+                        {% with i.comments.count as total_comments %}
+                        <div class="comments_box"> <span class="meta_date">{{i.date_created}}</span> <span class="meta_comment"><a href="{{ i.get_absolute_url }}">{{ total_comments }} comment{{ total_comments|pluralize }}</a></span> </div>
+                        {% endwith %}
+                      </div>
+                    </div>
+                  </li>
+              {% endfor %}
+              {% endif %}
+                </ul>
+              </div>
+            </div>
+            <div class="fashion_category">
+              <div class="single_category">
+                <div class="single_category wow fadeInDown">
+                  <h2> <span class="bold_line"><span></span></span> <span class="solid_line"></span> <a class="title_text" href="{% url 'list_of_news_by_category' 'lifestyle' %}">Lifestyle</a> </h2>
+                  <ul class="fashion_catgnav wow fadeInDown">
+                    {% if lifestyle %}
+              {% for i in lifestyle|slice:":1" %}
+                    <li>
+                      <div class="catgimg2_container"> <a href="{{ i.get_absolute_url }}"><img alt="" src="{{i.pic.url}}" height="390px" width="240px"></a> </div>
+                      <h2 class="catg_titile"><a href="{{ i.get_absolute_url }}">{{i.title}}</a></h2>
+                      {% with i.comments.count as total_comments %}
+                  <div class="comments_box"> <span class="meta_date">{{i.date_created}}</span> <span class="meta_comment"><a href="{{ i.get_absolute_url }}">{{ total_comments }} comment{{ total_comments|pluralize }}</a></span> <span class="meta_more"><a  href="{{ i.get_absolute_url }}">Read More...</a></span> </div>
+                  {% endwith %}
+                      <p>{{i.content|truncatewords:30|striptags|safe}}</p>
+                    </li>
+                    {% endfor %}
+              {% endif %}
+                  </ul>
+                  <ul class="small_catg wow fadeInDown">
+                    {% if lifestyle %}
+              {% for i in lifestyle|slice:"1:4" %}
+                    <li>
+                      <div class="media wow fadeInDown"> <a class="media-left" href="{{ i.get_absolute_url }}"><img src="{{i.pic.url}}" height="390px" width="240px" alt=""></a>
+                        <div class="media-body">
+                          <h4 class="media-heading"><a href="{{ i.get_absolute_url }}">{{i.title}}</a></h4>
+                          {% with i.comments.count as total_comments %}
+                        <div class="comments_box"> <span class="meta_date">{{i.date_created}}</span> <span class="meta_comment"><a href="{{ i.get_absolute_url }}">{{ total_comments }} comment{{ total_comments|pluralize }}</a></span> </div>
+                        {% endwith %}
+                        </div>
+                      </div>
+                    </li>
+                    {% endfor %}
+              {% endif %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="technology_catrarea">
+            <div class="single_category">
+              <h2> <span class="bold_line"><span></span></span> <span class="solid_line"></span> <a class="title_text" href="{% url 'list_of_news_by_category' 'technology' %}">Technology</a> </h2>
+              <div class="business_category_left">
+                <ul class="fashion_catgnav wow fadeInDown">
+                  {% if technology %}
+              {% for i in technology|slice:":1" %}
+                  <li>
+                    <div class="catgimg2_container"> <a href="{{ i.get_absolute_url }}"><img alt="" src="{{i.pic.url}}" height="390px" width="240px"></a> </div>
+                    <h2 class="catg_titile"><a href="{{ i.get_absolute_url }}">{{i.title}}</a></h2>
+                    {% with i.comments.count as total_comments %}
+                  <div class="comments_box"> <span class="meta_date">{{i.date_created}}</span> <span class="meta_comment"><a href="{{ i.get_absolute_url }}">{{ total_comments }} comment{{ total_comments|pluralize }}</a></span> <span class="meta_more"><a  href="{{ i.get_absolute_url }}">Read More...</a></span> </div>
+                  {% endwith %}
+                    <p>{{i.content|truncatewords:30|striptags|safe}}</p>
+                  </li>
+              {% endfor %}
+              {% endif %}
+                </ul>
+              </div>
+              <div class="business_category_right">
+                <ul class="small_catg wow fadeInDown">
+                  {% if technology %}
+              {% for i in technology|slice:"1:4" %}
+                  <li>
+                    <div class="media wow fadeInDown"> <a class="media-left" href="{{ i.get_absolute_url }}"><img src="{{i.pic.url}}" height="390px" width="240px"></a>
+                      <div class="media-body">
+                        <h4 class="media-heading"><a href="{{ i.get_absolute_url }}">{{i.title}}</a></h4>
+                        {% with i.comments.count as total_comments %}
+                        <div class="comments_box"> <span class="meta_date">{{i.date_created}}</span> <span class="meta_comment"><a href="{{ i.get_absolute_url }}">{{ total_comments }} comment{{ total_comments|pluralize }}</a></span> </div>
+                        {% endwith %}
+                      </div>
+                    </div>
+                  </li>
+              {% endfor %}
+              {% endif %}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-4">
+        <div class="content_bottom_right">
+          <div class="single_bottom_rightbar">
+            <h2>Recent Post</h2>
+            <ul class="small_catg popular_catg wow fadeInDown">
+              {% if data %}
+              {% for i in data|slice:":4" %}
+              <li>
+                <div class="media wow fadeInDown"> <a href="{{ i.get_absolute_url }}" class="media-left"><img alt="" src="{{i.pic.url}}" height="112px" width="112px"> </a>
+                  <div class="media-body">
+                    <h4 class="media-heading"><a href="{{ i.get_absolute_url }}">{{i.title}}</a></h4>
+                    <p>{{i.content|truncatewords:15|striptags|safe}}</p>
+                  </div>
+                </div>
+              </li>
+              {% endfor %}
+              {% endif %}
+            </ul>
+          </div>
+          <div class="single_bottom_rightbar">
+            <ul role="tablist" class="nav nav-tabs custom-tabs">
+              <li class="active" role="presentation"><a data-toggle="tab" role="tab" aria-controls="home" href="#mostPopular">Most Popular</a></li>
+            </ul>
+            <div class="tab-content">
+              <div id="mostPopular" class="tab-pane fade in active" role="tabpanel">
+                <ul class="small_catg popular_catg wow fadeInDown">
+                  {% if trend %}
+              {% for i in trend|slice:":4" %}
+                  <li>
+                    <div class="media wow fadeInDown"> <a class="media-left" href="{{ i.get_absolute_url }}"><img src="{{i.pic.url}}" height="390px" width="240px"></a>
+                      <div class="media-body">
+                        <h4 class="media-heading"><a href="{{ i.get_absolute_url }}">{{i.title}}</a></h4>
+                        <p>{{i.content|truncatewords:15|striptags|safe}}</p>
+                      </div>
+                    </div>
+                  </li>
+              {% endfor %}
+              {% endif %}
+                </ul>
+              </div>
+          <div class="single_bottom_rightbar">
+            <h2>Blog Archive</h2>
+            <div class="blog_archive wow fadeInDown">
+              <form action="#">
+                <select>
+                  <option value="">Blog Archive</option>
+                  <option value="">October(20)</option>
+                </select>
+              </form>
+            </div>
+          </div>
+          <div class="single_bottom_rightbar wow fadeInDown">
+            <h2>Popular Lnks</h2>
+            <ul>
+              <li><a href="#">Blog</a></li>
+              <li><a href="/">Home</a></li>
+              <li><a href="#">Social link</a></li>
+              <li><a href="{% url 'login' %}">Login</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<footer id="footer">
+  <div class="footer_top">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 col-md-4 col-sm-4">
+          <div class="single_footer_top wow fadeInLeft">
+            <h2>Flicker Images</h2>
+            <ul class="flicker_nav">
+              {% if data %}
+              {% for i in data|slice:":6" %}
+              <li><a href="{{i.pic.url}}"><img src="{{i.pic.url}}" height="75px" width="75px" alt=""></a></li>
+              {% endfor %}
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+          <div class="single_footer_top wow fadeInDown">
+            <h2>Labels</h2>
+            <ul class="labels_nav">
+              
+              <li><a href="{% url 'list_of_news_by_category' 'business' %}">Business</a></li>
+              <li><a href="{% url 'list_of_news_by_category' 'lifestyle' %}">Lifestyle</a></li>
+              <li><a href="{% url 'list_of_news_by_category' 'sports' %}">Sports</a></li>
+              <li><a href="{% url 'list_of_news_by_category' 'technology' %}">Technology</a></li>
+              <li><a href="{% url 'list_of_news_by_category' 'science' %}">Science</a></li>
+              <li><a href="{% url 'list_of_news_by_category' 'entertainment' %}">Entertainment</a></li>
+              <li><a href="{% url 'list_of_news_by_category' 'lifestyle' %}">Life &amp; Style</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+          <div class="single_footer_top wow fadeInRight">
+            <h2>About Us</h2>
+            <p>Your Personalized news feed</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer_bottom">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+          <div class="footer_bottom_left">
+            <p>Copyright &copy; 2019 <a href="#">ApeXNews</a></p>
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+          <div class="footer_bottom_right">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="/static/assets/js/jquery.min.js"></script> 
+<script src="/static/assets/js/bootstrap.min.js"></script> 
+<script src="/static/assets/js/wow.min.js"></script> 
+<script src="/static/assets/js/slick.min.js"></script> 
+<script src="/static/assets/js/custom.js"></script>
+</body>
+</html>
